@@ -177,13 +177,16 @@ bool ObstacleController::checkForCollectionZoneTags( vector<Tag> tags ) {
     // Check the orientation of the tag. If we are outside the collection zone the yaw will be positive so treat the collection zone as an obstacle. If the yaw is negative the robot is inside the collection zone and the boundary should not be treated as an obstacle. This allows the robot to leave the collection zone after dropping off a target.
     if ( tag.calcYaw() > 0 ) 
       {
+        std::cout << "yaw: " << tag.calcYaw() << ";" << std::endl;
 	// checks if tag is on the right or left side of the image
 	if (tag.getPositionX() + camera_offset_correction > 0) {
 	  count_right_collection_zone_tags++;
 	  
-	} else {
-	  count_left_collection_zone_tags++;
+    //t_collection_zone_tags++;
 	}
+        else {
+          count_left_collection_zone_tags++;
+        }
       }
     
   }
