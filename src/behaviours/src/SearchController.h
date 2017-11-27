@@ -45,6 +45,25 @@ private:
   // Flag to allow special behaviour for the first waypoint
   bool first_waypoint = true;
   bool succesfullPickup = false;
+
+  // Minimum distance from the center at which a waypoint may be placed.
+  double minDist;
+  // Maximum distance from the center at which a waypoint may be placed.
+  double maxDist;
+  // Amount of extra distance to add to the minDist and maxDist after an annulus
+  // has been searched for the required number of times.
+  double addlDist;
+
+  // Number of waypoints that will be chosen in each annular region before a new
+  // one is selected for each square meter of area in the current annulus.
+  double trialsPerSquareMeter;
+
+  int numTrialsCur;
+  int numTrialsMax;
+
+  int maxAttempts;
+
+  double GetAnnularArea(double minDist, double maxDist);
 };
 
 #endif /* SEARCH_CONTROLLER */
