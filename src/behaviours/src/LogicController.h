@@ -48,6 +48,7 @@ public:
   void SetCenterLocationMap(Point centerLocationMap);
   void AddManualWaypoint(Point wpt, int waypoint_id);
   void RemoveManualWaypoint(int waypoint_id);
+  void SetID(int robot_id);
   std::vector<int> GetClearedWaypoints();
 
   void SetModeManual();
@@ -98,6 +99,7 @@ private:
   void controllerInterconnect();
 
   long int current_time = 0;
+  int robot_id = 0;
 };
 
 #endif // LOGICCONTROLLER_H

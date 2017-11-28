@@ -26,6 +26,7 @@
 // Include Controllers
 #include "LogicController.h"
 #include <vector>
+#include <algorithm>
 
 #include "Point.h"
 #include "Tag.h"
@@ -109,7 +110,7 @@ long int startTime = 0;
 float minutesTime = 0;
 float hoursTime = 0;
 
-float drift_tolerance = 1.2; // meters
+float drift_tolerance = 5; // meters
 
 Result result;
 
@@ -130,6 +131,7 @@ ros::Publisher infoLogPublisher;
 ros::Publisher driveControlPublish;
 ros::Publisher heartbeatPublisher;
 ros::Publisher waypointFeedbackPublisher;
+ros::Publisher namePublisher; //!
 
 // Subscribers
 ros::Subscriber joySubscriber;
@@ -139,6 +141,7 @@ ros::Subscriber odometrySubscriber;
 ros::Subscriber mapSubscriber;
 ros::Subscriber virtualFenceSubscriber;
 ros::Subscriber manualWaypointSubscriber;
+ros::Subscriber nameSubscriber; //!
 
 // Timers
 ros::Timer stateMachineTimer;
@@ -152,6 +155,15 @@ time_t timerStartTime;
 // average its location.
 unsigned int startDelayInSeconds = 15;
 float timerTimeElapsed = 0;
+
+// Number of names this robot will expect to be sent.
+const int maxRobots = 3;
+
+// Number of names this robot has been sent so far.
+int numRobots = 0;
+
+// The names of the robots we have been sent so far.
+string robots [maxRobots];
 
 //Transforms
 tf::TransformListener *tfListener;
@@ -171,6 +183,7 @@ void behaviourStateMachine(const ros::TimerEvent&);
 void publishStatusTimerEventHandler(const ros::TimerEvent& event);
 void publishHeartBeatTimerEventHandler(const ros::TimerEvent& event);
 void sonarHandler(const sensor_msgs::Range::ConstPtr& sonarLeft, const sensor_msgs::Range::ConstPtr& sonarCenter, const sensor_msgs::Range::ConstPtr& sonarRight);
+void nameHandler(const std_msgs::String& message); //!
 
 // Converts the time passed as reported by ROS (which takes Gazebo simulation rate into account) into milliseconds as an integer.
 long int getROSTimeInMilliSecs();
@@ -203,6 +216,7 @@ int main(int argc, char **argv) {
   mapSubscriber = mNH.subscribe((publishedName + "/odom/ekf"), 10, mapHandler);
   virtualFenceSubscriber = mNH.subscribe(("/virtualFence"), 10, virtualFenceHandler);
   manualWaypointSubscriber = mNH.subscribe((publishedName + "/waypoints/cmd"), 10, manualWaypointHandler);
+  nameSubscriber = mNH.subscribe("/name", 10, nameHandler); //!
   message_filters::Subscriber<sensor_msgs::Range> sonarLeftSubscriber(mNH, (publishedName + "/sonarLeft"), 10);
   message_filters::Subscriber<sensor_msgs::Range> sonarCenterSubscriber(mNH, (publishedName + "/sonarCenter"), 10);
   message_filters::Subscriber<sensor_msgs::Range> sonarRightSubscriber(mNH, (publishedName + "/sonarRight"), 10);
@@ -215,6 +229,7 @@ int main(int argc, char **argv) {
   driveControlPublish = mNH.advertise<geometry_msgs::Twist>((publishedName + "/driveControl"), 10);
   heartbeatPublisher = mNH.advertise<std_msgs::String>((publishedName + "/behaviour/heartbeat"), 1, true);
   waypointFeedbackPublisher = mNH.advertise<swarmie_msgs::Waypoint>((publishedName + "/waypoints"), 1, true);
+  namePublisher = mNH.advertise<std_msgs::String>("/name", 10, true); //!
 
   publish_status_timer = mNH.createTimer(ros::Duration(status_publish_interval), publishStatusTimerEventHandler);
   stateMachineTimer = mNH.createTimer(ros::Duration(behaviourLoopTimeStep), behaviourStateMachine);
@@ -225,6 +240,10 @@ int main(int argc, char **argv) {
   
   message_filters::Synchronizer<sonarSyncPolicy> sonarSync(sonarSyncPolicy(10), sonarLeftSubscriber, sonarCenterSubscriber, sonarRightSubscriber);
   sonarSync.registerCallback(boost::bind(&sonarHandler, _1, _2, _3));
+
+  std_msgs::String nameMsg;
+  nameMsg.data = publishedName;
+  namePublisher.publish(nameMsg);
   
   tfListener = new tf::TransformListener();
   std_msgs::String msg;
@@ -660,7 +679,8 @@ void transformMapCentertoOdom()
   geometry_msgs::PoseStamped odomPose;
   string x = "";
   
-  try { //attempt to get the transform of the center point in map frame to odom frame.
+  try
+  { //attempt to get the transform of the center point in map frame to odom frame.
     tfListener->waitForTransform(publishedName + "/map", publishedName + "/odom", ros::Time::now(), ros::Duration(1.0));
     tfListener->transformPose(publishedName + "/odom", mapPose, odomPose);
   }
@@ -720,4 +740,35 @@ void humanTime() {
   }
   
   //cout << "System has been Running for :: " << hoursTime << " : hours " << minutesTime << " : minutes " << timeDiff << "." << frac << " : seconds" << endl; //you can remove or comment this out it just gives indication something is happening to the log file
+}
+
+// Record the names of robots as they are sent until every robot has sent a
+// name, at which point, give this robot an id and assign it in the robot's
+// logic controller.
+void nameHandler(const std_msgs::String& message) //!
+{
+  robots[numRobots++] = message.data;
+
+  if (numRobots == maxRobots)
+  {
+    // We've received the name of our last robot - sort the robot names
+    // alphabetically and, based on the alphabetical order of this robot's name
+    // among all the robot names, set its id.
+    
+    sort(robots, robots + maxRobots);
+
+    int id;
+
+    for (id = 0; id < maxRobots; id++)
+    {
+      if (robots[id] == publishedName)
+      {
+        break;
+      }
+    }
+
+    std::cout << "Robot " << publishedName << " has id " << id << std::endl;
+
+    logicController.SetID(id);
+  }
 }

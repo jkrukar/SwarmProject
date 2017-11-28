@@ -192,4 +192,8 @@ void SearchController::SetSuccesfullPickup() {
   succesfullPickup = true;
 }
 
-
+void SearchController::SetID(int robot_id)
+{
+  this->robot_id = robot_id;
+  std::cout << "I have ID " << this->robot_id << "!" << std::endl;
+}

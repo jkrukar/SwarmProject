@@ -26,6 +26,7 @@ public:
   void SetCurrentLocation(Point currentLocation);
   void SetCenterLocation(Point centerLocation);
   void SetSuccesfullPickup();
+  void SetID(int robot_id);
 
 protected:
 
@@ -45,6 +46,9 @@ private:
   // Flag to allow special behaviour for the first waypoint
   bool first_waypoint = true;
   bool succesfullPickup = false;
+
+  // ID of this robot.
+  int robot_id = 0;
 
   // Minimum distance from the center at which a waypoint may be placed.
   double minDist;

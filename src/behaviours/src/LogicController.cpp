@@ -386,3 +386,12 @@ void LogicController::SetModeManual()
     driveController.Reset();
   }
 }
+
+void LogicController::SetID(int robot_id)
+{
+  this->robot_id = robot_id;
+
+  // Set the robot's id in the search controller.
+
+  searchController.SetID(robot_id);
+}
