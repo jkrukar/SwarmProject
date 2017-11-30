@@ -67,7 +67,14 @@ private:
 
   int maxAttempts;
 
+  //This will keep track of the fibonacci sequence
+  int nextFibonacci;
+  int prevFibonacci;
+  int waypointCounter;
+
   double GetAnnularArea(double minDist, double maxDist);
+
+  int GetNextFibonacci(int prevFibonacci, int currentFibonacci);
 };
 
 #endif /* SEARCH_CONTROLLER */
