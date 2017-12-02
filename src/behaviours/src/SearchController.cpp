@@ -16,20 +16,20 @@ SearchController::SearchController() {
   result.fingerAngle = M_PI/2;
   result.wristAngle = M_PI/4;
 
-  minDist = 0.0;
-  maxDist = 10.0;
-  addlDist = 1.0;
+  minDist = 1.0;
+  maxDist = 2.0;
 
   trialsPerSquareMeter = 3.0;
 
   numTrialsCur = 0;
   numTrialsMax = 0;
 
-  maxAttempts = 5;
+  maxAttempts = 10;
 
   nextFibonacci = 1;
   prevFibonacci = 1;
   waypointCounter = 0;
+  
 }
 
 int SearchController::GetNextFibonacci(int prevFibonacci, int currentFibonacci)
@@ -50,6 +50,10 @@ double SearchController::GetAnnularArea(double minDist, double maxDist)
  * This code implements a basic random walk search.
  */
 Result SearchController::DoWork() {
+
+  double candidateTheta;
+  double candidateX;
+  double candidateY;
   
   if (!result.wpts.waypoints.empty()) {
     if (hypot(result.wpts.waypoints[0].x-currentLocation.x, result.wpts.waypoints[0].y-currentLocation.y) < 0.15) {
@@ -87,104 +91,74 @@ Result SearchController::DoWork() {
     }
     else
     {
-      //select new heading from Gaussian distribution around current heading
-      /*searchLocation.theta = rng->gaussian(currentLocation.theta, 0.785398); //45 degrees in radians
-      searchLocation.x = currentLocation.x + (0.5 * cos(searchLocation.theta));
-      searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));*/
+      if(explorer){ //Perform spiral search
 
-      // First, check to see if we've reached our maximum number of trials.  If
-      // so, update this robot to search the next annulus.
+        
+        if(waypointCounter == nextFibonacci){
 
-      // if (numTrialsCur == numTrialsMax)
-      // {
-      //   numTrialsCur = 0;
+          float distanceToCenter = hypot(currentLocation.x - centerLocation.x, currentLocation.y - centerLocation.y);
 
-      //   minDist += addlDist;
-      //   maxDist += addlDist;
-
-      //   numTrialsMax = (int) round(GetAnnularArea(minDist, maxDist) * trialsPerSquareMeter);
-
-      //   // Move this robot to the spot on the middle of the new annulus that is
-      //   // closest to its current position.
-
-      //   // First, calculate the robot position's angle with respect to the center.
-
-      //   searchLocation.theta = atan2(currentLocation.y - centerLocation.y, currentLocation.x - centerLocation.x);
-      //   std::cout << "numtrials==trialsmax: searchLocation.theta= " << searchLocation.theta << "!" << std::endl;
-
-          
-
-      //   // Then, set the next waypoint to be the one directly away from the center
-      //   // in the middle of the new annulus.
-
-      //   searchLocation.x = centerLocation.x + ((minDist + maxDist) / 2) * cos(searchLocation.theta);
-      //   searchLocation.y = centerLocation.y + ((minDist + maxDist) / 2) * sin(searchLocation.theta);
-      // }
-      // else
-      // {
-        // Simply have the robot move 50 cm in a direction skewed toward its
-        // current, provided that the new point lies on the current annulus.
-
-        double candidateTheta;
-        double candidateX;
-        double candidateY;
-        double dist;
-
-        int numAttempts = 0;
-
-
-        if(waypointCounter == nextFibonacci)
-        {
           //Get next number of fibonacci sequence
           int temp = nextFibonacci;
           nextFibonacci = GetNextFibonacci(prevFibonacci,nextFibonacci);
           prevFibonacci = temp;
 
-          searchLocation.theta = currentLocation.theta + (M_PI/4);
-          searchLocation.x = currentLocation.x + (0.5 * cos(searchLocation.theta));
-          searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));
-        }else{
-          //Continue heading in the same direction
-          searchLocation.theta = currentLocation.theta;
-          searchLocation.x = currentLocation.x + (0.5 * cos(searchLocation.theta));
-          searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));
+          // float deltaTheta = 1<<(int) distanceToCenter;
+          deltaTheta = 90/nextFibonacci;
+          //convert to radians
+          deltaTheta *= 0.01745;
         }
 
-        // do
-        // {
-        //   // candidateTheta = rng->gaussian(currentLocation.theta, 0.785398);
-        //   candidateTheta = currentLocation.theta + (M_PI/2);
+          candidateTheta = currentLocation.theta + deltaTheta;
+          candidateX = currentLocation.x + (0.5 * cos(candidateTheta));
+          candidateY = currentLocation.y + (0.5 * sin(candidateTheta));
 
-        //   candidateX = currentLocation.x + (0.5 * cos(candidateTheta));
-        //   candidateY = currentLocation.y + (0.5 * sin(candidateTheta));
 
-        //   dist = hypot(centerLocation.x - candidateX, centerLocation.y - candidateY);
+      }else{ //Search near collection zone
 
-        //   numAttempts++;
-        // }
-        // while ((dist < minDist || dist > maxDist) && numAttempts < maxAttempts);
+        double dist;
+        int numAttempts = 0;
 
-        // if (numAttempts == maxAttempts)
-        // {
-        //   // Our robot is unable to choose a valid point from its current location.
-        //   // Move to a new point chosen at random on the current annulus.
+        //Simply have the robot move 50 cm in a direction skewed toward its
+        //current, provided that the new point lies on the current annulus.
 
-        //   // candidateTheta = rng->uniformReal(0.0, 2 * M_PI);
-        //   candidateTheta = currentLocation.theta + (M_PI/4);
-          
-        //   dist = rng->uniformReal(minDist, maxDist);
+        do
+        {
+          candidateTheta = rng->gaussian(currentLocation.theta, 0.785398);
 
-        //   candidateX = centerLocation.x + dist * cos(candidateTheta);
-        //   candidateY = centerLocation.y + dist * sin(candidateTheta);
-        // }
+          candidateX = currentLocation.x + (0.5 * cos(candidateTheta));
+          candidateY = currentLocation.y + (0.5 * sin(candidateTheta));
 
-        // searchLocation.theta = candidateTheta;
-        // std::cout << "Else: searchLocation.theta= " << searchLocation.theta << "!" << std::endl;
+          dist = hypot(centerLocation.x - candidateX, centerLocation.y - candidateY);
 
-        // searchLocation.x = candidateX;
-        // searchLocation.y = candidateY;
-        numTrialsCur++;
-      // }
+          numAttempts++;
+        }
+        while ((dist < minDist || dist > maxDist) && numAttempts < maxAttempts);
+
+        // Our robot is unable to choose a valid point from its current location.
+        // Move to a new point chosen at random on the current annulus.
+        if (numAttempts == maxAttempts)
+        {
+
+          do
+          {
+            candidateTheta = rng->uniformReal(0.0, M_PI/2);
+            candidateX = currentLocation.x + (0.5 * cos(candidateTheta));
+            candidateY = currentLocation.y + (0.5 * sin(candidateTheta));
+
+            dist = hypot(centerLocation.x - candidateX, centerLocation.y - candidateY);
+
+          }
+          while (dist < minDist || dist > maxDist);
+        }
+
+      }
+
+      searchLocation.theta = candidateTheta;
+      searchLocation.x = candidateX;
+      searchLocation.y = candidateY;
+      numTrialsCur++;
+      
     }
 
     result.wpts.waypoints.clear();
@@ -234,4 +208,9 @@ void SearchController::SetID(int robot_id)
 {
   this->robot_id = robot_id;
   std::cout << "I have ID " << this->robot_id << "!" << std::endl;
+
+  if(robot_id > 0){
+    explorer = true;
+    std::cout << "I am an explorer!" << std::endl;
+  }
 }

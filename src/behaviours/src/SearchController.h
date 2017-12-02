@@ -71,6 +71,9 @@ private:
   int nextFibonacci;
   int prevFibonacci;
   int waypointCounter;
+  float deltaTheta;
+
+  bool explorer= false; //Robots that search the arena for cubes are explorers. The robot that stays near the collection zone is the organizer.
 
   double GetAnnularArea(double minDist, double maxDist);
 
