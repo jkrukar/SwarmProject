@@ -50,34 +50,14 @@ private:
   // ID of this robot.
   int robot_id = 0;
 
-  // Minimum distance from the center at which a waypoint may be placed.
-  double minDist;
-  // Maximum distance from the center at which a waypoint may be placed.
-  double maxDist;
-  // Amount of extra distance to add to the minDist and maxDist after an annulus
-  // has been searched for the required number of times.
-  double addlDist;
+  // Our current sampled number of points along the spiral.
+  int k = 0;
 
-  // Number of waypoints that will be chosen in each annular region before a new
-  // one is selected for each square meter of area in the current annulus.
-  double trialsPerSquareMeter;
+  // The tightness of the spiral.
+  double b = .08;
 
-  int numTrialsCur;
-  int numTrialsMax;
-
-  int maxAttempts;
-
-  //This will keep track of the fibonacci sequence
-  int nextFibonacci;
-  int prevFibonacci;
-  int waypointCounter;
-  float deltaTheta;
-
-  bool explorer= false; //Robots that search the arena for cubes are explorers. The robot that stays near the collection zone is the organizer.
-
-  double GetAnnularArea(double minDist, double maxDist);
-
-  int GetNextFibonacci(int prevFibonacci, int currentFibonacci);
+  // Where we start on the spiral once our search begins.
+  double a = 8 * 3.14159265358979323 + 3.14159265358979323 / 8;
 };
 
 #endif /* SEARCH_CONTROLLER */
