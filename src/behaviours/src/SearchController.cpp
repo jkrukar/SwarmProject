@@ -55,7 +55,7 @@ Result SearchController::DoWork() {
       searchLocation.x = currentLocation.x + (0.5 * cos(searchLocation.theta));
       searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));
 
-      a = (robot_id + 2) * 8 * 3.14159265358979323 + 3.14159265358979323 / 8;
+      a = (robot_id + 1) * 8 * 3.14159265358979323 + 3.14159265358979323 / 8;
     }
     else
     {
@@ -70,7 +70,7 @@ Result SearchController::DoWork() {
       searchLocation.x = centerLocation.x + b * (M_PI / 4 * k + a) * cos(M_PI / 4 * k + a);
       searchLocation.y = centerLocation.y + b * (M_PI / 4 * k + a) * sin(M_PI / 4 * k + a);
 
-      k--;
+      k++;
     }
 
     result.wpts.waypoints.clear();
