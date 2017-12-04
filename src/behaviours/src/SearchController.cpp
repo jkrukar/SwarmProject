@@ -14,6 +14,16 @@ SearchController::SearchController() {
 
   result.fingerAngle = M_PI/2;
   result.wristAngle = M_PI/4;
+
+  trialsPerSquareMeter = 3.0;
+
+  // Variables for inactive code
+  // minDist = 1.0;
+  // maxDist = 2.0;
+  // numTrialsCur = 0;
+  // numTrialsMax = 0;
+  // maxAttempts = 10;
+  // explorer = false;
 }
 
 void SearchController::Reset() {
@@ -127,8 +137,8 @@ int SearchController::GetID()
 }
 
 bool SearchController::GetExploreState(){
-  if(explorer){
-    return true;
-  }
+  // if(explorer){
+  //   return true;
+  // }
   return false;
 }
