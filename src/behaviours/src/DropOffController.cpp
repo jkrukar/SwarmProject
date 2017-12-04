@@ -22,6 +22,7 @@ DropOffController::DropOffController() {
   isPrecisionDriving = false;
   startWaypoint = false;
   timerTimeElapsed = -1;
+  explorer = searchController.GetExploreState();
 
 }
 
@@ -97,7 +98,7 @@ Result DropOffController::DoWork() {
     Point nextSpinPoint;
 
     //sets a goal that is 60cm from the centerLocation and spinner
-    //radians counterclockwise from being purly along the x-axis.
+    //radians counterclockwise from being purely along the x-axis.
     nextSpinPoint.x = centerLocation.x + (initialSpinSize + spinSizeIncrease) * cos(spinner);
     nextSpinPoint.y = centerLocation.y + (initialSpinSize + spinSizeIncrease) * sin(spinner);
     nextSpinPoint.theta = atan2(nextSpinPoint.y - currentLocation.y, nextSpinPoint.x - currentLocation.x);
@@ -124,6 +125,21 @@ Result DropOffController::DoWork() {
   bool left = (countLeft > 0);
   bool right = (countRight > 0);
   bool centerSeen = (right || left);
+
+  if(explorer && targetHeld && distanceToCenter < 2){
+    handOffCube = true;
+    seenEnoughCenterTags = true;
+    centerSeen = true;
+
+    reachedCollectionPoint = true;
+    centerApproach = false;
+    returnTimer = current_time;
+
+    result.type = behavior;
+    result.b = nextProcess;
+    result.reset = false; 
+    return result;
+  }
 
   //reset lastCenterTagThresholdTime timout timer to current time
   if ((!centerApproach && !seenEnoughCenterTags) || (count > 0 && !seenEnoughCenterTags)) {
@@ -246,7 +262,7 @@ Result DropOffController::DoWork() {
 
   }
 
-  if (!centerSeen && seenEnoughCenterTags)
+  if ((!centerSeen && seenEnoughCenterTags) || handOffCube)
   {
     reachedCollectionPoint = true;
     centerApproach = false;
@@ -285,6 +301,7 @@ void DropOffController::Reset() {
   startWaypoint = false;
   first_center = true;
   cout << "6" << endl;
+  handOffCube = false;
 
 }
 

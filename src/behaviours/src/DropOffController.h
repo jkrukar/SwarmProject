@@ -5,6 +5,7 @@
 #include "Controller.h"
 #include "Tag.h"
 #include <math.h>
+#include "SearchController.h"
 
 class DropOffController : virtual Controller
 {
@@ -119,6 +120,11 @@ private:
   bool precisionInterrupt = false;
   bool finalInterrupt = false;
   bool first_center = true;
+
+  //Flag to indicate this robot should leave cubes near the collection zone, not in it.
+  SearchController searchController;
+  bool handOffCube = false;
+  bool explorer = false;
 
 };
 #endif // end header define

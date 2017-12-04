@@ -3,6 +3,7 @@
 
 #include "Controller.h"
 #include "Tag.h"
+#include "SearchController.h"
 
 class PickUpController : virtual Controller
 {
@@ -18,6 +19,8 @@ public:
 
   bool SetSonarData(float rangeCenter);
 
+  void SetCurrentLocation(Point currentLocation);
+  void SetCenterLocation(Point centerLocation);
   float getDistance() {return blockDistance;}
   bool GetLockTarget() {return lockTarget;}
   void SetUltraSoundData(bool blockBlock);
@@ -76,6 +79,11 @@ private:
 
   //this controller has control~
   bool has_control = false;
+
+  bool explorer = false;
+  SearchController searchController;
+  Point currentLocation;
+  Point centerLocation;
 };
 
 #endif // end header define

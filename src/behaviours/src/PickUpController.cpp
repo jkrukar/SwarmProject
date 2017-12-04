@@ -18,6 +18,8 @@ PickUpController::PickUpController()
   result.fingerAngle = -1;
   result.wristAngle = -1;
   result.PIDMode = SLOW_PID;
+
+  explorer = searchController.GetExploreState();
 }
 
 PickUpController::~PickUpController() { /*Destructor*/  }
@@ -27,6 +29,14 @@ void PickUpController::SetTagData(vector<Tag> tags)
 
   if (tags.size() > 0)
   {
+
+    if(explorer){ 
+      double distanceToCenter = hypot(this->centerLocation.x - this->currentLocation.x, this->centerLocation.y - this->currentLocation.y);
+      if(distanceToCenter < 2){
+        std::cout << "Ignoring blocks too close to the center! Dist= " << distanceToCenter << std::endl;
+        return;
+      }
+    }
 
     nTargetsSeen = tags.size();
 
@@ -377,4 +387,12 @@ void PickUpController::SetUltraSoundData(bool blockBlock){
 void PickUpController::SetCurrentTimeInMilliSecs( long int time )
 {
   current_time = time;
+}
+
+void PickUpController::SetCenterLocation(Point centerLocation) {
+  this->centerLocation = centerLocation;  
+}
+
+void PickUpController::SetCurrentLocation(Point currentLocation) {
+  this->currentLocation = currentLocation;
 }

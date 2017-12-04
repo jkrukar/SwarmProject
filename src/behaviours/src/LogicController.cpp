@@ -293,6 +293,7 @@ void LogicController::SetPositionData(Point currentLocation)
   obstacleController.setCurrentLocation(currentLocation);
   driveController.SetCurrentLocation(currentLocation);
   manualWaypointController.SetCurrentLocation(currentLocation);
+  pickUpController.SetCurrentLocation(currentLocation);
 }
 
 // Recieves position in the world frame with global data (GPS)
@@ -329,6 +330,7 @@ void LogicController::SetCenterLocationOdom(Point centerLocationOdom)
 {
   searchController.SetCenterLocation(centerLocationOdom);
   dropOffController.SetCenterLocation(centerLocationOdom);
+  pickUpController.SetCenterLocation(centerLocationOdom);
 }
 
 void LogicController::AddManualWaypoint(Point manualWaypoint, int waypoint_id)

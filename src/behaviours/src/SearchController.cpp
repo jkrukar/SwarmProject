@@ -120,3 +120,15 @@ void SearchController::SetID(int robot_id)
 {
   this->robot_id = robot_id;
 }
+
+int SearchController::GetID()
+{
+  return this->robot_id;
+}
+
+bool SearchController::GetExploreState(){
+  if(explorer){
+    return true;
+  }
+  return false;
+}

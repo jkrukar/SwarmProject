@@ -27,6 +27,8 @@ public:
   void SetCenterLocation(Point centerLocation);
   void SetSuccesfullPickup();
   void SetID(int robot_id);
+  int GetID();
+  bool GetExploreState();
 
 protected:
 
