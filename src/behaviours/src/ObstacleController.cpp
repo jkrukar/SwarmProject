@@ -19,14 +19,23 @@ void ObstacleController::Reset() {
 void ObstacleController::avoidObstacle() {
   
     //obstacle on right side
-    if (right < triggerDistance || center < triggerDistance || left < triggerDistance) {
+    if (right < triggerDistance || center < 3*triggerDistance || left < triggerDistance && right<left) {
       result.type = precisionDriving;
-
-      result.pd.cmdAngular = -K_angular;
-
       result.pd.setPointVel = 0.0;
       result.pd.cmdVel = 0.0;
       result.pd.setPointYaw = 0;
+      if (left<=right)
+      {
+
+      	result.pd.cmdAngular = -K_angular;
+
+      }
+      if (right<left)
+      {
+     	 result.pd.cmdAngular = K_angular;
+     
+      }
+      
     }
 }
 
@@ -75,8 +84,21 @@ Result ObstacleController::DoWork() {
     result.type = waypoint;
     result.PIDMode = FAST_PID;
     Point forward;
-    forward.x = currentLocation.x + (0.5 * cos(currentLocation.theta));
-    forward.y = currentLocation.y + (0.5 * sin(currentLocation.theta));
+    if(right<left){
+    	forward.x = currentLocation.x + (0.75 * cos(currentLocation.theta));
+   		forward.y = currentLocation.y + (0.75 * sin(currentLocation.theta));
+    }
+   	else if (left<right)
+   	{
+   		forward.x = currentLocation.x + (-0.75 * cos(currentLocation.theta));
+   		forward.y = currentLocation.y + (-0.75 * sin(currentLocation.theta));
+   	}
+   	else{
+   		forward.x = currentLocation.x + (0.75 * cos(currentLocation.theta));
+   		forward.y = currentLocation.y + (0.75 * sin(currentLocation.theta));
+
+   	}
+    
     result.wpts.waypoints.clear();
     result.wpts.waypoints.push_back(forward);
   }
