@@ -15,8 +15,6 @@ SearchController::SearchController() {
   result.fingerAngle = M_PI/2;
   result.wristAngle = M_PI/4;
 
-  trialsPerSquareMeter = 3.0;
-
   // Variables for inactive code
   // minDist = 1.0;
   // maxDist = 2.0;
