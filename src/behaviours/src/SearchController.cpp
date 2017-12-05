@@ -63,7 +63,7 @@ Result SearchController::DoWork() {
       searchLocation.x = currentLocation.x + (0.5 * cos(searchLocation.theta));
       searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));
 
-      a = (robot_id + 1) * 8 * 3.14159265358979323 + 3.14159265358979323 / 8;
+      a = (robot_id + 1) * 8 * M_PI + M_PI / 8;
     }
     else
     {
@@ -73,11 +73,19 @@ Result SearchController::DoWork() {
       searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));*/
 
       // Sample points along an Archimedian Spiral - exactly eight points per
-      // winding.
+      // winding UNLESS the distance of this point from the center exceeds 7.5
+      // meters, in which case return to sampling points near the center (around
+      // where the first robot begins by default).
+
+      if (b * (M_PI / 4 * k + a) > 7.5)
+      {
+        a = 8 * M_PI + M_PI / 8;
+        k = 0;
+      }
 
       searchLocation.x = centerLocation.x + b * (M_PI / 4 * k + a) * cos(M_PI / 4 * k + a);
       searchLocation.y = centerLocation.y + b * (M_PI / 4 * k + a) * sin(M_PI / 4 * k + a);
-
+     
       k++;
     }
 
