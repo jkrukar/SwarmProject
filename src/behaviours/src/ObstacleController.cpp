@@ -8,6 +8,7 @@ ObstacleController::ObstacleController()
   result.PIDMode = CONST_PID;
 }
 
+
 void ObstacleController::Reset() {
   obstacleAvoided = true;
   obstacleDetected = false;
@@ -23,7 +24,7 @@ void ObstacleController::avoidObstacle() {
       result.type = precisionDriving;
       result.pd.setPointVel = 0.0;
       result.pd.cmdVel = 0.0;
-      result.pd.setPointYaw = 0;
+      result.pd.setPointYaw = 0; 
       if (left<=right)
       {
 
@@ -44,6 +45,7 @@ void ObstacleController::avoidObstacle() {
 void ObstacleController::avoidCollectionZone() {
   
     result.type = precisionDriving;
+
 
     result.pd.cmdVel = 0.0;
 
@@ -84,20 +86,16 @@ Result ObstacleController::DoWork() {
     result.type = waypoint;
     result.PIDMode = FAST_PID;
     Point forward;
-    if(right<left){
-    	forward.x = currentLocation.x + (0.75 * cos(currentLocation.theta));
-   		forward.y = currentLocation.y + (0.75 * sin(currentLocation.theta));
+    if(right<=left){
+    	forward.x = currentLocation.x + (0.5 * cos(currentLocation.theta));
+   		forward.y = currentLocation.y + (0.5 * sin(currentLocation.theta));
     }
-   	else if (left<right)
+   	if (left> right)
    	{
-   		forward.x = currentLocation.x + (-0.75 * cos(currentLocation.theta));
-   		forward.y = currentLocation.y + (-0.75 * sin(currentLocation.theta));
+   		forward.x = currentLocation.x + (0.5 * cos(currentLocation.theta));
+   		forward.y = currentLocation.y + (0.5 * sin(currentLocation.theta));
    	}
-   	else{
-   		forward.x = currentLocation.x + (0.75 * cos(currentLocation.theta));
-   		forward.y = currentLocation.y + (0.75 * sin(currentLocation.theta));
-
-   	}
+   	
     
     result.wpts.waypoints.clear();
     result.wpts.waypoints.push_back(forward);
