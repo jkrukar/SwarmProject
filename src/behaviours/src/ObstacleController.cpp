@@ -20,7 +20,8 @@ void ObstacleController::Reset() {
 void ObstacleController::avoidObstacle() {
   
     //obstacle on right side
-    if (right < triggerDistance || center < 3*triggerDistance || left < triggerDistance && right<left) {
+    if (right < triggerDistance || center < triggerDistance || left < triggerDistance && right<left) {
+      counter=0;
       result.type = precisionDriving;
       result.pd.setPointVel = 0.0;
       result.pd.cmdVel = 0.0;
@@ -61,25 +62,9 @@ void ObstacleController::avoidCollectionZone() {
     result.pd.cmdVel = 0.0;
     result.pd.setPointYaw = 0;
 }
-
-
-Result ObstacleController::DoWork() {
-
-  clearWaypoints = true;
-  set_waypoint = true;
-  result.PIDMode = CONST_PID;
-
-  // The obstacle is an april tag marking the collection zone
-  if(collection_zone_seen){
-    avoidCollectionZone();
-  }
-  else {
-    avoidObstacle();
-  }
-
-  if (can_set_waypoint) {
-
-    can_set_waypoint = false;
+void ObstacleController::avoidTheObstical(){
+	
+	can_set_waypoint = false;
     set_waypoint = false;
     clearWaypoints = false;
 
@@ -99,6 +84,45 @@ Result ObstacleController::DoWork() {
     
     result.wpts.waypoints.clear();
     result.wpts.waypoints.push_back(forward);
+
+}
+
+
+Result ObstacleController::DoWork() {
+
+  clearWaypoints = true;
+  set_waypoint = true;
+  result.PIDMode = CONST_PID;
+  if (right<triggerDistance)
+  {
+  	counter++;
+  }
+  if (left<triggerDistance)
+  {
+  	counter++;
+  }
+  if (center<triggerDistance)
+  {
+  	counter++;
+  }
+
+  // The obstacle is an april tag marking the collection zone
+  if(collection_zone_seen){
+    avoidCollectionZone();
+  }
+  else {
+  	if (counter>=2)
+  	{
+  		avoidObstacle();
+  	}
+    
+  }
+  
+
+  if (can_set_waypoint) {
+
+  	avoidTheObstical();
+    
   }
 
   return result;
@@ -265,3 +289,4 @@ void ObstacleController::setTargetHeld() {
     previousTargetState = true;
   }
 }
+
