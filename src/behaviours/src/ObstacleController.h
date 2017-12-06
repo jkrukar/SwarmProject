@@ -16,6 +16,7 @@ public:
   void setSonarData(float left, float center, float right);
   void setCurrentLocation(Point currentLocation);
   void setTagData(vector<Tag> tags);
+  void avoidTheObstical();
   bool ShouldInterrupt() override;
   bool HasWork() override;
   void setIgnoreCenterSonar();
@@ -59,6 +60,7 @@ private:
   float left = 0;
   float center = 0;
   float right = 0;
+  int counter = 0; 
 
   unsigned int count_left_collection_zone_tags;
   unsigned int count_right_collection_zone_tags;
