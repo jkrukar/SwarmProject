@@ -39,7 +39,7 @@ Result SearchController::DoWork() {
     }
   }
 
-  if (attemptCount > 0 && attemptCount < 5) {
+  if (attemptCount > 0 && attemptCount < 2) {
     attemptCount++;
     if (succesfullPickup) {
       succesfullPickup = false;
@@ -47,7 +47,7 @@ Result SearchController::DoWork() {
     }
     return result;
   }
-  else if (attemptCount >= 5 || attemptCount == 0) 
+  else if (attemptCount >= 2 || attemptCount == 0) 
   {
     attemptCount = 1;
 
