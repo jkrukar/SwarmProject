@@ -63,7 +63,47 @@ Result SearchController::DoWork() {
       searchLocation.x = currentLocation.x + (0.5 * cos(searchLocation.theta));
       searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));
 
-      a = (robot_id + 1) * 8 * M_PI + M_PI / 8;
+      // Assign each robot a certain initial depth in the spiral - with robot 0
+      // beginning closest to the center, and robot 2 beginning furthest from
+      // the center.  Also, have each robot choose an initial point that doesn't
+      // require them to cross the collection zone so that they don't run into
+      // each other on startup.
+
+      std::cout << "" << std::endl;
+
+      if (currentLocation.y > centerLocation.y + 0.2)
+      {
+        // The y-location of this robot is greater than the center location.
+        // Have it choose an initial point on the spiral with a positive y (at
+        // roughly an angle of 5 * pi / 8 radians with the horizontal).
+
+        a = (robot_id + 1) * 8 * M_PI + 5 * M_PI / 8;
+      }
+      else if (currentLocation.y < centerLocation.y - 0.2)
+      {
+        // The y-location of this robot is less than the center location.  Have
+        // it choose an initial point on the spiral with a negative y (at
+        // roughly an angle of -3 * pi / 8 radians with the horizontal).
+
+        a = (robot_id + 1) * 8 * M_PI - 3 * M_PI / 8;
+      }
+      else if (currentLocation.x > centerLocation.x + 0.2)
+      {
+        // The x-location of this robot is greater than the center location.
+        // Have it choose an initial point on the spiral with a positive x (at
+        // roughly an angle of pi / 8 radians with the horizontal).
+        
+        a = (robot_id + 1) * 8 * M_PI + M_PI / 8;
+      }
+      else
+      {
+        // Either the x-location of this robot is less than the center location,
+        // or we've missed every case somehow.  Either way, have it choose an
+        // initial point on the spiral with a negative x (at roughly an angle of
+        // -7 * pi / 8 radians with the horizontal).
+
+        a = (robot_id + 1) * 8 * M_PI - 7 * M_PI / 8;
+      }
     }
     else
     {
@@ -73,11 +113,12 @@ Result SearchController::DoWork() {
       searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));*/
 
       // Sample points along an Archimedian Spiral - exactly eight points per
-      // winding UNLESS the distance of this point from the center exceeds 7.5
-      // meters, in which case return to sampling points near the center (around
-      // where the first robot begins by default).
+      // winding UNLESS the distance of this point from the center exceeds 6
+      // meters (for a 12 meter by 12 meter arena), in which case return to
+      // sampling points near the center (around where the first robot begins by
+      // default).
 
-      if (b * (M_PI / 4 * k + a) > 7.5)
+      if (b * (M_PI / 4 * k + a) > 6)
       {
         a = 8 * M_PI + M_PI / 8;
         k = 0;
