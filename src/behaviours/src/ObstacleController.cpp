@@ -62,6 +62,7 @@ void ObstacleController::avoidCollectionZone() {
     result.pd.cmdVel = 0.0;
     result.pd.setPointYaw = 0;
 }
+// class handles obstical avoidence behaviour, is called by doWork
 void ObstacleController::avoidTheObstical(){
 	
 	can_set_waypoint = false;
