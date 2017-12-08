@@ -30,6 +30,12 @@ public:
 
   void SetCurrentTimeInMilliSecs( long int time );
 
+  Point GetClusterLocation();
+  void SetClusterLocation(Point clusterLocation);
+
+  bool GetClusterLocationState();
+  void SetClusterLocationState(bool newState);
+
 protected:
 
   void ProcessData();
@@ -84,6 +90,9 @@ private:
   SearchController searchController;
   Point currentLocation;
   Point centerLocation;
+
+  bool hasClusterLocation = false;
+  Point clusterLocation;
 };
 
 #endif // end header define

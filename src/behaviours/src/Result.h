@@ -78,4 +78,5 @@ struct Result {
   PIDType PIDMode;
 
   bool reset;
+
 };

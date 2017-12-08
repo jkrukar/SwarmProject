@@ -33,9 +33,15 @@ void SearchController::Reset() {
  */
 Result SearchController::DoWork() {
 
+  // std::cout << "[SearchController::DoWork()] Current position: (" << currentLocation.x << ", " <<  currentLocation.y << ")" << std::endl;
+
   if (!result.wpts.waypoints.empty()) {
     if (hypot(result.wpts.waypoints[0].x-currentLocation.x, result.wpts.waypoints[0].y-currentLocation.y) < 0.10) {
       attemptCount = 0;
+
+      if(hasClusterLocation){
+          hasClusterLocation = false; //Reset cluster flag once back at cluster
+      }
     }
   }
 
@@ -50,7 +56,6 @@ Result SearchController::DoWork() {
   else if (attemptCount >= 2 || attemptCount == 0) 
   {
     attemptCount = 1;
-
 
     result.type = waypoint;
     Point  searchLocation;
@@ -128,6 +133,13 @@ Result SearchController::DoWork() {
       searchLocation.y = centerLocation.y + b * (M_PI / 4 * k + a) * sin(M_PI / 4 * k + a);
      
       k++;
+    } 
+
+    //Return to cluster location
+    if(hasClusterLocation){
+      std::cout << "Heading back to cluster" << std::endl;
+      searchLocation.x = clusterLocation.x;
+      searchLocation.y = clusterLocation.y;
     }
 
     result.wpts.waypoints.clear();
@@ -188,4 +200,21 @@ bool SearchController::GetExploreState(){
   //   return true;
   // }
   return false;
+}
+
+Point SearchController::GetClusterLocation(){
+  return clusterLocation;
+}
+ 
+void SearchController::SetClusterLocation(Point clusterLocation){
+  this->clusterLocation = clusterLocation;
+}
+
+bool SearchController::GetClusterLocationState(){
+  return hasClusterLocation;
+
+}
+
+void SearchController::SetClusterLocationState(bool newState){
+  hasClusterLocation = newState;
 }

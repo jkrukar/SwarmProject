@@ -253,6 +253,7 @@ bool LogicController::HasWork()
 void LogicController::controllerInterconnect() 
 {
 
+
   if (processState == PROCCESS_STATE_SEARCHING) 
   {
 
@@ -281,6 +282,14 @@ void LogicController::controllerInterconnect()
   if(obstacleController.getShouldClearWaypoints()) 
   {
     driveController.Reset();
+  }
+
+  //If a cluster has been found, send location to search controller
+  if(pickUpController.GetClusterLocationState()){
+    Point cluserLocation = pickUpController.GetClusterLocation();
+    searchController.SetClusterLocationState(true);
+    searchController.SetClusterLocation(cluserLocation);
+    pickUpController.SetClusterLocationState(false);
   }
 
 }

@@ -29,6 +29,12 @@ public:
   void SetID(int robot_id);
   int GetID();
   bool GetExploreState();
+  
+  Point GetClusterLocation();
+  void SetClusterLocation(Point clusterLocation);
+
+  bool GetClusterLocationState();
+  void SetClusterLocationState(bool newState);
 
 protected:
 
@@ -60,6 +66,10 @@ private:
 
   // Where we start on the spiral once our search begins.
   double a = 8 * 3.14159265358979323 + 3.14159265358979323 / 8;
+
+  bool hasClusterLocation = false;
+  Point clusterLocation;
+
 };
 
 #endif /* SEARCH_CONTROLLER */

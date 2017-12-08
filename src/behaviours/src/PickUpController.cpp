@@ -30,13 +30,12 @@ void PickUpController::SetTagData(vector<Tag> tags)
   if (tags.size() > 0)
   {
 
-    if(explorer){ 
-      double distanceToCenter = hypot(this->centerLocation.x - this->currentLocation.x, this->centerLocation.y - this->currentLocation.y);
-      if(distanceToCenter < 2){
-        std::cout << "Ignoring blocks too close to the center! Dist= " << distanceToCenter << std::endl;
-        return;
-      }
-    }
+    // if(explorer){ 
+    //   double distanceToCenter = hypot(this->centerLocation.x - this->currentLocation.x, this->centerLocation.y - this->currentLocation.y);
+    //   if(distanceToCenter < 2){
+    //     return;
+    //   }
+    // }
 
     nTargetsSeen = tags.size();
 
@@ -52,6 +51,18 @@ void PickUpController::SetTagData(vector<Tag> tags)
 
       if (tags[i].getID() == 0)
       {
+
+        if(nTargetsSeen >= 2){
+
+          double distanceToCenter = hypot(this->centerLocation.x - this->currentLocation.x, this->centerLocation.y - this->currentLocation.y);
+
+          if(distanceToCenter > 2){
+            clusterLocation.x = currentLocation.x;
+            clusterLocation.y = currentLocation.y;
+            hasClusterLocation = true;
+          }
+        }
+        
 
         targetFound = true;
 
@@ -102,7 +113,7 @@ void PickUpController::SetTagData(vector<Tag> tags)
 
     blockYawError = atan((tags[target].getPositionX() + cameraOffsetCorrection)/blockDistance)*1.05; //angle to block from bottom center of chassis on the horizontal.
 
-    cout << "blockYawError TAGDATA:  " << blockYawError << endl;
+    // cout << "blockYawError TAGDATA:  " << blockYawError << endl;
 
   }
 
@@ -192,6 +203,8 @@ bool PickUpController::ShouldInterrupt(){
 
 Result PickUpController::DoWork()
 {
+
+  std::cout << "[PickUpController::DoWork()]" << std::endl;
 
   has_control = true;
 
@@ -395,4 +408,20 @@ void PickUpController::SetCenterLocation(Point centerLocation) {
 
 void PickUpController::SetCurrentLocation(Point currentLocation) {
   this->currentLocation = currentLocation;
+}
+
+Point PickUpController::GetClusterLocation(){
+  return clusterLocation;
+}
+ 
+void PickUpController::SetClusterLocation(Point clusterLocation){
+  this->clusterLocation = clusterLocation;
+}
+
+bool PickUpController::GetClusterLocationState(){
+  return hasClusterLocation;
+}
+
+void PickUpController::SetClusterLocationState(bool newState){
+  hasClusterLocation = newState;
 }
