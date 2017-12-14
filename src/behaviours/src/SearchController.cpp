@@ -14,14 +14,6 @@ SearchController::SearchController() {
 
   result.fingerAngle = M_PI/2;
   result.wristAngle = M_PI/4;
-
-  // Variables for inactive code
-  // minDist = 1.0;
-  // maxDist = 2.0;
-  // numTrialsCur = 0;
-  // numTrialsMax = 0;
-  // maxAttempts = 10;
-  // explorer = false;
 }
 
 void SearchController::Reset() {
@@ -29,11 +21,9 @@ void SearchController::Reset() {
 }
 
 /**
- * This code implements a basic random walk search.
+ * This code implements the spiral search algorithm with site fidelity.
  */
 Result SearchController::DoWork() {
-
-  // std::cout << "[SearchController::DoWork()] Current position: (" << currentLocation.x << ", " <<  currentLocation.y << ")" << std::endl;
 
   if (!result.wpts.waypoints.empty()) {
     if (hypot(result.wpts.waypoints[0].x-currentLocation.x, result.wpts.waypoints[0].y-currentLocation.y) < 0.10) {
@@ -74,8 +64,6 @@ Result SearchController::DoWork() {
       // require them to cross the collection zone so that they don't run into
       // each other on startup.
 
-      std::cout << "" << std::endl;
-
       if (currentLocation.y > centerLocation.y + 0.2)
       {
         // The y-location of this robot is greater than the center location.
@@ -112,11 +100,6 @@ Result SearchController::DoWork() {
     }
     else
     {
-      //select new heading from Gaussian distribution around current heading
-      /*searchLocation.theta = rng->gaussian(currentLocation.theta, 0.785398); //45 degrees in radians
-      searchLocation.x = currentLocation.x + (0.5 * cos(searchLocation.theta));
-      searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));*/
-
       // Sample points along an Archimedian Spiral - exactly eight points per
       // winding UNLESS the distance of this point from the center exceeds 6
       // meters (for a 12 meter by 12 meter arena), in which case return to
@@ -135,7 +118,7 @@ Result SearchController::DoWork() {
       k++;
     } 
 
-    //Return to cluster location
+    // Return to cluster location, if a cluster was seen previously.
     if(hasClusterLocation){
       std::cout << "Heading back to cluster" << std::endl;
       searchLocation.x = clusterLocation.x;
@@ -147,7 +130,7 @@ Result SearchController::DoWork() {
     
     return result;
   }
-// 13
+
 }
 
 void SearchController::SetCenterLocation(Point centerLocation) {
@@ -196,9 +179,6 @@ int SearchController::GetID()
 }
 
 bool SearchController::GetExploreState(){
-  // if(explorer){
-  //   return true;
-  // }
   return false;
 }
 
