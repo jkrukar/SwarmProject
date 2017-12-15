@@ -33,7 +33,7 @@ void SearchController::Reset() {
  */
 Result SearchController::DoWork() {
 
-  // std::cout << "[SearchController::DoWork()] Current position: (" << currentLocation.x << ", " <<  currentLocation.y << ")" << std::endl;
+  std::cout << "[SearchController::DoWork()] Current position: (" << currentLocation.x << ", " <<  currentLocation.y << ")" << std::endl;
 
   if (!result.wpts.waypoints.empty()) {
     if (hypot(result.wpts.waypoints[0].x-currentLocation.x, result.wpts.waypoints[0].y-currentLocation.y) < 0.10) {
@@ -137,7 +137,7 @@ Result SearchController::DoWork() {
 
     //Return to cluster location
     if(hasClusterLocation){
-      std::cout << "Heading back to cluster" << std::endl;
+      std::cout << "Search Controller: Heading back to cluster" << std::endl;
       searchLocation.x = clusterLocation.x;
       searchLocation.y = clusterLocation.y;
     }

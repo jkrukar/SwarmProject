@@ -286,6 +286,7 @@ void LogicController::controllerInterconnect()
 
   //If a cluster has been found, send location to search controller
   if(pickUpController.GetClusterLocationState()){
+    std::cout << "Logic Controller: Passing cluster info" << std::endl;
     Point cluserLocation = pickUpController.GetClusterLocation();
     searchController.SetClusterLocationState(true);
     searchController.SetClusterLocation(cluserLocation);

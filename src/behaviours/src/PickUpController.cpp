@@ -52,11 +52,16 @@ void PickUpController::SetTagData(vector<Tag> tags)
       if (tags[i].getID() == 0)
       {
 
+        std::cout << "Pickup controller: nTargetsSeen="<< nTargetsSeen << std::endl;
+
         if(nTargetsSeen >= 2){
 
           double distanceToCenter = hypot(this->centerLocation.x - this->currentLocation.x, this->centerLocation.y - this->currentLocation.y);
 
-          if(distanceToCenter > 2){
+          std::cout << "Pickup controller: distanceToCenter="<< distanceToCenter << std::endl;
+
+          if(distanceToCenter > 1.5){
+            std::cout << "Pickup controller: Storing cluster location" << std::endl;
             clusterLocation.x = currentLocation.x;
             clusterLocation.y = currentLocation.y;
             hasClusterLocation = true;
@@ -204,7 +209,7 @@ bool PickUpController::ShouldInterrupt(){
 Result PickUpController::DoWork()
 {
 
-  std::cout << "[PickUpController::DoWork()]" << std::endl;
+  // std::cout << "[PickUpController::DoWork()]" << std::endl;
 
   has_control = true;
 
