@@ -112,6 +112,9 @@ Result ObstacleController::DoWork() {
     avoidCollectionZone();
   }
   else {
+    // Avoid an obstacle only if at least two ultrasound sensors have detected
+    // it.
+
   	if (counter>=2)
   	{
   		avoidObstacle();
